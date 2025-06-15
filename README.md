@@ -29,16 +29,16 @@
 
 
 ### 3. Install Dependencies
-pip install -r requirements.txt
+- pip install -r requirements.txt
 
 
 ### 4. Run Migrations
-python manage.py makemigrations
-python manage.py migrate
+- python manage.py makemigrations
+- python manage.py migrate
 
 
 ### 5. Start the Server
-python manage.py runserver
+- python manage.py runserver
 
 --- 
 
