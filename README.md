@@ -1,6 +1,8 @@
-# 📝 Notes Manager - Django REST API + Frontend
+# 📝 Notes Apps
 
-A simple full-stack application to manage notes.
+- A simple full-stack application to write your notes.
+- View notes.
+- Update and delete notes.
 
 ---
 
@@ -14,19 +16,16 @@ A simple full-stack application to manage notes.
 
 ---
 
-
----
-
 ## ⚙️ Setup Instructions
 
 ### 1. Clone the Repository
-git clone https://github.com/salmanakhtar57/Notes-App.git
-cd Notes-App
+- git clone https://github.com/salmanakhtar57/Notes-App.git
+- cd Notes-App
 
 
 ### 2. Create Virtual Environment & Activate
-python -m venv venv
-source venv/bin/activate    # On Windows: venv\Scripts\activate
+- python -m venv venv
+- source venv/bin/activate    # On Windows: venv\Scripts\activate
 
 
 ### 3. Install Dependencies
@@ -37,15 +36,16 @@ pip install -r requirements.txt
 python manage.py makemigrations
 python manage.py migrate
 
+
 ### 5. Start the Server
 python manage.py runserver
 
 --- 
 
-Visit Frontend: http://127.0.0.1:8000/
-Visit API: http://127.0.0.1:8000/api/notes/
+- Visit Frontend: http://127.0.0.1:8000/
+- Visit API: http://127.0.0.1:8000/api/notes/
 
 --- 
 
-🤝 Contribution
+### 🤝 Contribution
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
