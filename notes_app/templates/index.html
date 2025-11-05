@@ -323,6 +323,13 @@
       font-size: 1.05rem;
       font-weight: 500;
     }
+    .not-found-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #9ca3af;
+      font-size: 1.05rem;
+      font-weight: 500;
+    }
     #notesList {
       max-height: 500px;
       overflow-y: auto;
@@ -437,11 +444,15 @@
       const searchTerm = searchBox.value.toLowerCase();
       const sortMethod = sortSelect.value;
 
-      // Filter notes
-      let filtered = allNotes.filter(note => 
-        note.title.toLowerCase().includes(searchTerm) || 
-        note.content.toLowerCase().includes(searchTerm)
-      );
+      let filtered = allNotes;
+
+      // Only filter if search term is more than 1 character
+      if (searchTerm.length > 1) {
+        filtered = allNotes.filter(note => 
+          note.title.toLowerCase().includes(searchTerm) || 
+          note.content.toLowerCase().includes(searchTerm)
+        );
+      }
 
       // Sort notes
       filtered.sort((a, b) => {
@@ -459,14 +470,19 @@
       const unpinned = filtered.filter(note => !pinnedNotes.includes(note.id));
       const sortedNotes = [...pinned, ...unpinned];
 
-      displayNotes(sortedNotes);
+      displayNotes(sortedNotes, searchTerm.length > 1 && filtered.length === 0);
     }
 
-    function displayNotes(notes) {
+    function displayNotes(notes, showNotFound) {
       notesList.innerHTML = "";
 
-      if (notes.length === 0) {
+      if (notes.length === 0 && !showNotFound) {
         notesList.innerHTML = "<div class='empty-state'>No notes found.</div>";
+        return;
+      }
+
+      if (showNotFound) {
+        notesList.innerHTML = "<div class='not-found-state'>No matching notes found.</div>";
         return;
       }
 
