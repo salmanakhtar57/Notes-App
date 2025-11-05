@@ -99,6 +99,49 @@
     .toggle-btn:hover {
       background: #f5f3ff;
     }
+
+    /* Search and Filter Section */
+    .search-filter-section {
+      margin-bottom: 20px;
+    }
+    .search-box {
+      width: 100%;
+      padding: 14px 20px;
+      font-size: 0.95rem;
+      border: none;
+      border-radius: 14px;
+      font-family: inherit;
+      background: #f9fafb;
+      color: #111827;
+      margin-bottom: 12px;
+    }
+    .search-box:focus {
+      outline: none;
+      background: #f3f4f6;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+    .filter-sort-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .sort-select {
+      flex: 1;
+      padding: 12px 16px;
+      font-size: 0.9rem;
+      border: none;
+      border-radius: 12px;
+      background: #f9fafb;
+      color: #111827;
+      font-family: inherit;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .sort-select:focus {
+      outline: none;
+      background: #f3f4f6;
+    }
+
     .note-card {
       background: #fafafa;
       border-radius: 20px;
@@ -106,17 +149,42 @@
       margin-bottom: 16px;
       transition: all 0.3s ease;
       border: 1px solid transparent;
+      position: relative;
+    }
+    .note-card.pinned {
+      background: #fef3c7;
+      border-color: #fbbf24;
+    }
+    .note-card.pinned:hover {
+      background: #fde68a;
+      border-color: #f59e0b;
     }
     .note-card:hover {
       background: #f5f3ff;
       border-color: #e9d5ff;
       transform: translateY(-2px);
     }
+    .pin-icon {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+      color: #9ca3af;
+    }
+    .pin-icon:hover {
+      transform: scale(1.2);
+    }
+    .note-card.pinned .pin-icon {
+      color: #f59e0b;
+    }
     .note-header {
       display: flex;
       align-items: flex-start;
       gap: 16px;
       margin-bottom: 16px;
+      padding-right: 35px;
     }
     .note-checkbox {
       width: 20px;
@@ -216,6 +284,11 @@
       transform: translateY(-1px);
       box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
     }
+    .selected-count {
+      color: #6b7280;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
     #toast {
       position: fixed;
       top: 24px;
@@ -299,6 +372,18 @@
 
     <!-- Page 2: View Notes -->
     <div id="notesPage" style="display: none;">
+      <!-- Search and Filter -->
+      <div class="search-filter-section">
+        <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search notes...">
+        <div class="filter-sort-row">
+          <select class="sort-select" id="sortSelect">
+            <option value="newest">📅 Newest First</option>
+            <option value="oldest">📅 Oldest First</option>
+            <option value="alphabetical">🔤 A to Z</option>
+          </select>
+        </div>
+      </div>
+
       <div id="notesList"></div>
       <button class="toggle-btn" id="backBtn">Back to Add Note</button>
     </div>
@@ -312,11 +397,18 @@
     const createNotePage = document.getElementById("createNotePage");
     const notesPage = document.getElementById("notesPage");
     const toast = document.getElementById("toast");
+    const searchBox = document.getElementById("searchBox");
+    const sortSelect = document.getElementById("sortSelect");
+
+    let allNotes = [];
+    let pinnedNotes = JSON.parse(localStorage.getItem('pinnedNotes') || '[]');
 
     document.addEventListener("DOMContentLoaded", loadNotes);
     document.getElementById("noteForm").addEventListener("submit", handleFormSubmit);
     toggleBtn.addEventListener("click", () => togglePages(true));
     backBtn.addEventListener("click", () => togglePages(false));
+    searchBox.addEventListener("input", filterAndDisplayNotes);
+    sortSelect.addEventListener("change", filterAndDisplayNotes);
 
     function togglePages(showNotes) {
       if (showNotes) {
@@ -335,49 +427,125 @@
       fetch(apiUrl)
         .then(res => res.json())
         .then(data => {
-          notesList.innerHTML = "";
-
-          if (data.length === 0) {
-            notesList.innerHTML = "<div class='empty-state'>No notes created yet.</div>";
-            return;
-          }
-
-          const controls = document.createElement("div");
-          controls.className = "controls";
-          controls.innerHTML = `
-            <label><input type="checkbox" id="selectAll"> Select All</label>
-            <button id="deleteSelectedBtn" class="delete-selected-btn">Delete Selected</button>
-          `;
-          notesList.appendChild(controls);
-
-          data.forEach(note => {
-            const div = document.createElement("div");
-            div.className = "note-card";
-            div.innerHTML = `
-              <div class="note-header">
-                <input type="checkbox" class="note-checkbox" data-id="${note.id}">
-                <div class="note-content">
-                  <h3>${note.title}</h3>
-                  <p>${note.content}</p>
-                  <div class="timestamp">Created at: ${note.created_at}</div>
-                </div>
-              </div>
-              <div class="note-actions">
-                <button class="edit-btn" onclick="editNote(${note.id}, '${note.title}', \`${note.content}\`)">Edit</button>
-                <button class="delete-btn" onclick="deleteNote(${note.id})">Delete</button>
-              </div>
-            `;
-            notesList.appendChild(div);
-          });
-
-          document.getElementById("selectAll").addEventListener("change", function () {
-            const checkboxes = document.querySelectorAll(".note-checkbox");
-            checkboxes.forEach(cb => cb.checked = this.checked);
-          });
-
-          document.getElementById("deleteSelectedBtn").addEventListener("click", deleteSelectedNotes);
+          allNotes = data;
+          filterAndDisplayNotes();
         })
         .catch(() => showToast("Failed to load notes", "error"));
+    }
+
+    function filterAndDisplayNotes() {
+      const searchTerm = searchBox.value.toLowerCase();
+      const sortMethod = sortSelect.value;
+
+      // Filter notes
+      let filtered = allNotes.filter(note => 
+        note.title.toLowerCase().includes(searchTerm) || 
+        note.content.toLowerCase().includes(searchTerm)
+      );
+
+      // Sort notes
+      filtered.sort((a, b) => {
+        if (sortMethod === 'newest') {
+          return new Date(b.created_at) - new Date(a.created_at);
+        } else if (sortMethod === 'oldest') {
+          return new Date(a.created_at) - new Date(b.created_at);
+        } else if (sortMethod === 'alphabetical') {
+          return a.title.localeCompare(b.title);
+        }
+      });
+
+      // Separate pinned and unpinned
+      const pinned = filtered.filter(note => pinnedNotes.includes(note.id));
+      const unpinned = filtered.filter(note => !pinnedNotes.includes(note.id));
+      const sortedNotes = [...pinned, ...unpinned];
+
+      displayNotes(sortedNotes);
+    }
+
+    function displayNotes(notes) {
+      notesList.innerHTML = "";
+
+      if (notes.length === 0) {
+        notesList.innerHTML = "<div class='empty-state'>No notes found.</div>";
+        return;
+      }
+
+      // Controls
+      const controls = document.createElement("div");
+      controls.className = "controls";
+      controls.innerHTML = `
+        <label><input type="checkbox" id="selectAll"> Select All</label>
+        <div id="deleteSelectedContainer" style="display: none;">
+          <button id="deleteSelectedBtn" class="delete-selected-btn">Delete <span id="selectedCount">0</span> item(s)</button>
+        </div>
+      `;
+      notesList.appendChild(controls);
+
+      notes.forEach(note => {
+        const div = document.createElement("div");
+        div.className = `note-card ${pinnedNotes.includes(note.id) ? 'pinned' : ''}`;
+        div.innerHTML = `
+          <div class="pin-icon" onclick="togglePin(${note.id})">${pinnedNotes.includes(note.id) ? '📌' : '📍'}</div>
+          <div class="note-header">
+            <input type="checkbox" class="note-checkbox" data-id="${note.id}">
+            <div class="note-content">
+              <h3>${note.title}</h3>
+              <p>${note.content}</p>
+              <div class="timestamp">Created at: ${note.created_at}</div>
+            </div>
+          </div>
+          <div class="note-actions">
+            <button class="edit-btn" onclick="editNote(${note.id}, '${note.title}', \`${note.content}\`)">Edit</button>
+            <button class="delete-btn" onclick="deleteNote(${note.id})">Delete</button>
+          </div>
+        `;
+        notesList.appendChild(div);
+      });
+
+      // Select All & Checkbox Events
+      const selectAllCheckbox = document.getElementById("selectAll");
+      const checkboxes = document.querySelectorAll(".note-checkbox");
+      
+      selectAllCheckbox.addEventListener("change", function () {
+        checkboxes.forEach(cb => cb.checked = this.checked);
+        updateDeleteButton();
+      });
+
+      checkboxes.forEach(cb => {
+        cb.addEventListener("change", updateDeleteButton);
+      });
+
+      const deleteBtn = document.getElementById("deleteSelectedBtn");
+      if (deleteBtn) {
+        deleteBtn.addEventListener("click", deleteSelectedNotes);
+      }
+
+      updateDeleteButton();
+    }
+
+    function updateDeleteButton() {
+      const selectedCheckboxes = document.querySelectorAll(".note-checkbox:checked");
+      const deleteContainer = document.getElementById("deleteSelectedContainer");
+      const countSpan = document.getElementById("selectedCount");
+      
+      if (selectedCheckboxes.length > 0) {
+        deleteContainer.style.display = "block";
+        countSpan.textContent = selectedCheckboxes.length;
+      } else {
+        deleteContainer.style.display = "none";
+      }
+    }
+
+    function togglePin(id) {
+      if (pinnedNotes.includes(id)) {
+        pinnedNotes = pinnedNotes.filter(noteId => noteId !== id);
+        showToast("Note unpinned", "success");
+      } else {
+        pinnedNotes.push(id);
+        showToast("Note pinned", "success");
+      }
+      localStorage.setItem('pinnedNotes', JSON.stringify(pinnedNotes));
+      filterAndDisplayNotes();
     }
 
     function handleFormSubmit(e) {
@@ -417,6 +585,9 @@
         fetch(apiUrl + id + "/", { method: "DELETE" })
           .then(res => {
             if (!res.ok) throw new Error();
+            // Remove from pinned if it was pinned
+            pinnedNotes = pinnedNotes.filter(noteId => noteId !== id);
+            localStorage.setItem('pinnedNotes', JSON.stringify(pinnedNotes));
             loadNotes();
             showToast("Note deleted successfully!", "success");
           })
@@ -437,6 +608,9 @@
         ))
           .then(responses => {
             if (responses.some(r => !r.ok)) throw new Error();
+            // Remove deleted notes from pinned
+            pinnedNotes = pinnedNotes.filter(id => !selectedIds.includes(id.toString()));
+            localStorage.setItem('pinnedNotes', JSON.stringify(pinnedNotes));
             showToast("Selected notes deleted successfully!", "success");
             loadNotes();
           })
