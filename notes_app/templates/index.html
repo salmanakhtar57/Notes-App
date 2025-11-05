@@ -18,6 +18,10 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
+      transition: background 0.3s ease;
+    }
+    body.dark-mode {
+      background: linear-gradient(to bottom right, #1e1b4b, #312e81, #4c1d95);
     }
     .container {
       background: white;
@@ -26,6 +30,36 @@
       width: 100%;
       max-width: 520px;
       padding: 48px 40px;
+      position: relative;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    body.dark-mode .container {
+      background: #1f2937;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    .theme-toggle {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      background: #f3f4f6;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .theme-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    body.dark-mode .theme-toggle {
+      background: #374151;
     }
     h1 {
       text-align: center;
@@ -34,6 +68,10 @@
       color: #111827;
       margin-bottom: 32px;
       letter-spacing: -0.5px;
+      transition: color 0.3s ease;
+    }
+    body.dark-mode h1 {
+      color: #f9fafb;
     }
     form {
       margin-bottom: 24px;
@@ -50,13 +88,26 @@
       color: #111827;
       transition: all 0.2s ease;
     }
+    body.dark-mode input[type="text"], 
+    body.dark-mode textarea {
+      background: #374151;
+      color: #f9fafb;
+    }
     input[type="text"]:focus, textarea:focus {
       outline: none;
       background: #f3f4f6;
       box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
     }
+    body.dark-mode input[type="text"]:focus, 
+    body.dark-mode textarea:focus {
+      background: #4b5563;
+    }
     input[type="text"]::placeholder, textarea::placeholder {
       color: #9ca3af;
+    }
+    body.dark-mode input[type="text"]::placeholder, 
+    body.dark-mode textarea::placeholder {
+      color: #6b7280;
     }
     textarea {
       resize: none;
@@ -114,11 +165,19 @@
       background: #f9fafb;
       color: #111827;
       margin-bottom: 12px;
+      transition: all 0.2s ease;
+    }
+    body.dark-mode .search-box {
+      background: #374151;
+      color: #f9fafb;
     }
     .search-box:focus {
       outline: none;
       background: #f3f4f6;
       box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+    body.dark-mode .search-box:focus {
+      background: #4b5563;
     }
     .filter-sort-row {
       display: flex;
@@ -136,10 +195,18 @@
       font-family: inherit;
       cursor: pointer;
       font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    body.dark-mode .sort-select {
+      background: #374151;
+      color: #f9fafb;
     }
     .sort-select:focus {
       outline: none;
       background: #f3f4f6;
+    }
+    body.dark-mode .sort-select:focus {
+      background: #4b5563;
     }
 
     .note-card {
@@ -151,18 +218,33 @@
       border: 1px solid transparent;
       position: relative;
     }
+    body.dark-mode .note-card {
+      background: #374151;
+    }
     .note-card.pinned {
       background: #fef3c7;
       border-color: #fbbf24;
     }
+    body.dark-mode .note-card.pinned {
+      background: #92400e;
+      border-color: #d97706;
+    }
     .note-card.pinned:hover {
       background: #fde68a;
+      border-color: #f59e0b;
+    }
+    body.dark-mode .note-card.pinned:hover {
+      background: #b45309;
       border-color: #f59e0b;
     }
     .note-card:hover {
       background: #f5f3ff;
       border-color: #e9d5ff;
       transform: translateY(-2px);
+    }
+    body.dark-mode .note-card:hover {
+      background: #4b5563;
+      border-color: #6b7280;
     }
     .pin-icon {
       position: absolute;
@@ -221,17 +303,29 @@
       color: #111827;
       margin-bottom: 8px;
       letter-spacing: -0.3px;
+      transition: color 0.3s ease;
+    }
+    body.dark-mode .note-content h3 {
+      color: #f9fafb;
     }
     .note-content p {
       color: #6b7280;
       line-height: 1.6;
       margin-bottom: 12px;
       font-size: 0.95rem;
+      transition: color 0.3s ease;
+    }
+    body.dark-mode .note-content p {
+      color: #d1d5db;
     }
     .timestamp {
       font-size: 0.8rem;
       color: #9ca3af;
       font-weight: 400;
+      transition: color 0.3s ease;
+    }
+    body.dark-mode .timestamp {
+      color: #9ca3af;
     }
     .note-actions {
       display: flex;
@@ -249,19 +343,36 @@
     .edit-btn {
       background: #f3f4f6;
       color: #374151;
+      transition: all 0.2s ease;
+    }
+    body.dark-mode .edit-btn {
+      background: #4b5563;
+      color: #f9fafb;
     }
     .edit-btn:hover {
       background: #e5e7eb;
       transform: translateY(-1px);
     }
+    body.dark-mode .edit-btn:hover {
+      background: #6b7280;
+    }
     .delete-btn {
       background: #f3f4f6;
       color: #374151;
+      transition: all 0.2s ease;
+    }
+    body.dark-mode .delete-btn {
+      background: #4b5563;
+      color: #f9fafb;
     }
     .delete-btn:hover {
       background: #fee2e2;
       color: #dc2626;
       transform: translateY(-1px);
+    }
+    body.dark-mode .delete-btn:hover {
+      background: #7f1d1d;
+      color: #fca5a5;
     }
     .controls {
       display: flex;
@@ -271,6 +382,10 @@
       padding: 16px 20px;
       background: #fafafa;
       border-radius: 16px;
+      transition: background 0.3s ease;
+    }
+    body.dark-mode .controls {
+      background: #374151;
     }
     .controls label {
       display: flex;
@@ -279,6 +394,10 @@
       color: #374151;
       cursor: pointer;
       font-size: 0.95rem;
+      transition: color 0.3s ease;
+    }
+    body.dark-mode .controls label {
+      color: #f9fafb;
     }
     .controls input[type="checkbox"] {
       width: 18px;
@@ -340,6 +459,10 @@
       color: #9ca3af;
       font-size: 1.05rem;
       font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    body.dark-mode .empty-state {
+      color: #6b7280;
     }
     .not-found-state {
       text-align: center;
@@ -347,6 +470,10 @@
       color: #9ca3af;
       font-size: 1.05rem;
       font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    body.dark-mode .not-found-state {
+      color: #6b7280;
     }
     #notesList {
       max-height: 500px;
@@ -379,6 +506,7 @@
 </head>
 <body>
   <div class="container">
+    <button class="theme-toggle" id="themeToggle">🌙</button>
     <h1>My Notes</h1>
 
     <!-- Toast Container -->
@@ -427,6 +555,13 @@
 
     let allNotes = [];
     let pinnedNotes = JSON.parse(localStorage.getItem('pinnedNotes') || '[]');
+    let darkMode = localStorage.getItem('darkMode') === 'true';
+
+    // Apply dark mode on load
+    if (darkMode) {
+      document.body.classList.add('dark-mode');
+      document.getElementById('themeToggle').textContent = '☀️';
+    }
 
     document.addEventListener("DOMContentLoaded", loadNotes);
     document.getElementById("noteForm").addEventListener("submit", handleFormSubmit);
@@ -434,6 +569,14 @@
     backBtn.addEventListener("click", () => togglePages(false));
     searchBox.addEventListener("input", filterAndDisplayNotes);
     sortSelect.addEventListener("change", filterAndDisplayNotes);
+    document.getElementById("themeToggle").addEventListener("click", toggleTheme);
+
+    function toggleTheme() {
+      darkMode = !darkMode;
+      document.body.classList.toggle('dark-mode');
+      document.getElementById('themeToggle').textContent = darkMode ? '☀️' : '🌙';
+      localStorage.setItem('darkMode', darkMode);
+    }
 
     function togglePages(showNotes) {
       if (showNotes) {
