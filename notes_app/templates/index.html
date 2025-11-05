@@ -10,12 +10,13 @@
       max-width: 800px;
       margin: auto;
       background: #f9f9f9;
+      transition: all 0.3s ease;
     }
     h1 {
       text-align: center;
     }
     form {
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
       background: #fff;
       padding: 1rem;
       border-radius: 8px;
@@ -31,6 +32,19 @@
       padding: 0.7rem 1.5rem;
       font-size: 1rem;
       margin-top: 0.5rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+    }
+    #toggleNotesBtn {
+      display: block;
+      margin: 0 auto 1.5rem auto;
+      background-color: #007bff;
+      color: #fff;
+      transition: background 0.3s;
+    }
+    #toggleNotesBtn:hover {
+      background-color: #0056b3;
     }
     .note {
       background: #fff;
@@ -39,6 +53,7 @@
       border-left: 4px solid #007bff;
       border-radius: 4px;
       position: relative;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
     }
     .note-actions {
       position: absolute;
@@ -52,32 +67,94 @@
       font-size: 0.8rem;
       color: #666;
     }
+
+    /* ✅ Toast Styles */
+    #toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #333;
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 0.4s ease;
+      z-index: 1000;
+      pointer-events: none;
+    }
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .toast-success {
+      background-color: #28a745;
+    }
+    .toast-error {
+      background-color: #dc3545;
+    }
   </style>
 </head>
 <body>
   <h1>My Notes</h1>
 
-  <form id="noteForm">
-    <input type="text" id="title" placeholder="Title" required />
-    <textarea id="content" rows="4" placeholder="Content" required></textarea>
-    <input type="hidden" id="noteId" value="">
-    <button type="submit">Save Note</button>
-  </form>
+  <!-- Toast Container -->
+  <div id="toast"></div>
 
-  <div id="notesList"></div>
+  <!-- Page 1: Add Note -->
+  <div id="createNotePage">
+    <form id="noteForm">
+      <input type="text" id="title" placeholder="Title" required />
+      <textarea id="content" rows="4" placeholder="Content" required></textarea>
+      <input type="hidden" id="noteId" value="">
+      <button type="submit">Save Note</button>
+    </form>
+  </div>
+
+  <!-- Page 2: View Notes -->
+  <div id="notesPage" style="display: none;">
+    <div id="notesList"></div>
+  </div>
+
+  <!-- Toggle Button -->
+  <button id="toggleNotesBtn">Show Notes</button>
 
   <script>
     const apiUrl = "http://127.0.0.1:8000/api/notes/";
+    const notesList = document.getElementById("notesList");
+    const toggleBtn = document.getElementById("toggleNotesBtn");
+    const createNotePage = document.getElementById("createNotePage");
+    const notesPage = document.getElementById("notesPage");
+    const toast = document.getElementById("toast");
 
     document.addEventListener("DOMContentLoaded", loadNotes);
     document.getElementById("noteForm").addEventListener("submit", handleFormSubmit);
+    toggleBtn.addEventListener("click", togglePages);
+
+    function togglePages() {
+      const showingNotes = notesPage.style.display === "block";
+
+      if (showingNotes) {
+        notesPage.style.display = "none";
+        createNotePage.style.display = "block";
+        toggleBtn.textContent = "Show Notes";
+      } else {
+        createNotePage.style.display = "none";
+        notesPage.style.display = "block";
+        toggleBtn.textContent = "Back to Add Note";
+        loadNotes();
+      }
+    }
 
     function loadNotes() {
       fetch(apiUrl)
         .then(res => res.json())
         .then(data => {
-          const list = document.getElementById("notesList");
-          list.innerHTML = "";
+          notesList.innerHTML = "";
+          if (data.length === 0) {
+            notesList.innerHTML = "<p>No notes created yet.</p>";
+            return;
+          }
           data.forEach(note => {
             const div = document.createElement("div");
             div.className = "note";
@@ -90,9 +167,10 @@
                 <button onclick="deleteNote(${note.id})">Delete</button>
               </div>
             `;
-            list.appendChild(div);
+            notesList.appendChild(div);
           });
-        });
+        })
+        .catch(() => showToast("Failed to load notes", "error"));
     }
 
     function handleFormSubmit(e) {
@@ -102,23 +180,25 @@
       const id = document.getElementById("noteId").value;
 
       const payload = { title, content };
-
       const method = id ? "PUT" : "POST";
       const url = id ? apiUrl + id + "/" : apiUrl;
 
       fetch(url, {
         method: method,
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
-      }).then(() => {
-        document.getElementById("noteForm").reset();
-        loadNotes();
-      });
+      })
+        .then(res => {
+          if (!res.ok) throw new Error();
+          document.getElementById("noteForm").reset();
+          if (notesPage.style.display === "block") loadNotes();
+          showToast(id ? "Note updated successfully!" : "Note saved successfully!", "success");
+        })
+        .catch(() => showToast("Something went wrong!", "error"));
     }
 
     function editNote(id, title, content) {
+      togglePages();
       document.getElementById("title").value = title;
       document.getElementById("content").value = content;
       document.getElementById("noteId").value = id;
@@ -126,10 +206,24 @@
 
     function deleteNote(id) {
       if (confirm("Are you sure you want to delete this note?")) {
-        fetch(apiUrl + id + "/", {
-          method: "DELETE"
-        }).then(() => loadNotes());
+        fetch(apiUrl + id + "/", { method: "DELETE" })
+          .then(res => {
+            if (!res.ok) throw new Error();
+            loadNotes();
+            showToast("Note deleted successfully!", "success");
+          })
+          .catch(() => showToast("Failed to delete note", "error"));
       }
+    }
+
+    // ✅ Toast Function
+    function showToast(message, type = "success") {
+      toast.textContent = message;
+      toast.className = type === "success" ? "show toast-success" : "show toast-error";
+
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2500);
     }
   </script>
 </body>
