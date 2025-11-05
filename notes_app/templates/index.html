@@ -2,147 +2,332 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Notes App</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     body {
-      font-family: Arial, sans-serif;
-      padding: 2rem;
-      max-width: 800px;
-      margin: auto;
-      background: #f9f9f9;
-      transition: all 0.3s ease;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      background: linear-gradient(to bottom right, #c7d2fe, #ddd6fe, #e9d5ff);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 32px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      width: 100%;
+      max-width: 520px;
+      padding: 48px 40px;
     }
     h1 {
       text-align: center;
+      font-size: 2.75rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 32px;
+      letter-spacing: -0.5px;
     }
     form {
-      margin-bottom: 1.5rem;
-      background: #fff;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      margin-bottom: 24px;
     }
-    input, textarea {
+    input[type="text"], textarea {
       width: 100%;
-      padding: 0.7rem;
-      margin: 0.5rem 0;
+      padding: 16px 20px;
+      margin-bottom: 16px;
       font-size: 1rem;
+      border: none;
+      border-radius: 16px;
+      font-family: inherit;
+      background: #f9fafb;
+      color: #111827;
+      transition: all 0.2s ease;
+    }
+    input[type="text"]:focus, textarea:focus {
+      outline: none;
+      background: #f3f4f6;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+    input[type="text"]::placeholder, textarea::placeholder {
+      color: #9ca3af;
+    }
+    textarea {
+      resize: none;
+      min-height: 140px;
+      font-size: 0.95rem;
+      line-height: 1.6;
     }
     button {
-      padding: 0.7rem 1.5rem;
-      font-size: 1rem;
-      margin-top: 0.5rem;
+      width: 100%;
+      padding: 16px;
+      font-size: 1.1rem;
+      font-weight: 600;
       cursor: pointer;
       border: none;
-      border-radius: 5px;
+      border-radius: 16px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-family: inherit;
     }
-    #toggleNotesBtn {
-      display: block;
-      margin: 0 auto 1.5rem auto;
-      background-color: #007bff;
-      color: #fff;
-      transition: background 0.3s;
+    button[type="submit"] {
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      color: white;
+      box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.5);
+      margin-bottom: 0;
     }
-    #toggleNotesBtn:hover {
-      background-color: #0056b3;
+    button[type="submit"]:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 30px -5px rgba(139, 92, 246, 0.6);
     }
-    .note {
-      background: #fff;
-      margin: 1rem 0;
-      padding: 1rem;
-      border-left: 4px solid #007bff;
-      border-radius: 4px;
-      position: relative;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    button[type="submit"]:active {
+      transform: translateY(0);
     }
-    .note-actions {
-      position: absolute;
-      top: 10px;
-      right: 10px;
+    .toggle-btn {
+      background: transparent;
+      color: #8b5cf6;
+      font-weight: 500;
+      font-size: 1rem;
+      margin-top: 16px;
+      padding: 12px;
     }
-    .note-actions button {
-      margin-left: 0.5rem;
+    .toggle-btn:hover {
+      background: #f5f3ff;
+    }
+    .note-card {
+      background: #fafafa;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 16px;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+    }
+    .note-card:hover {
+      background: #f5f3ff;
+      border-color: #e9d5ff;
+      transform: translateY(-2px);
+    }
+    .note-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .note-checkbox {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-top: 4px;
+      accent-color: #8b5cf6;
+    }
+    .note-content {
+      flex: 1;
+    }
+    .note-content h3 {
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
+    .note-content p {
+      color: #6b7280;
+      line-height: 1.6;
+      margin-bottom: 12px;
+      font-size: 0.95rem;
     }
     .timestamp {
       font-size: 0.8rem;
-      color: #666;
+      color: #9ca3af;
+      font-weight: 400;
     }
-
-    /* ✅ Toast Styles */
+    .note-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .note-actions button {
+      flex: 1;
+      padding: 10px 16px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border-radius: 12px;
+      width: auto;
+    }
+    .edit-btn {
+      background: #f3f4f6;
+      color: #374151;
+    }
+    .edit-btn:hover {
+      background: #e5e7eb;
+      transform: translateY(-1px);
+    }
+    .delete-btn {
+      background: #f3f4f6;
+      color: #374151;
+    }
+    .delete-btn:hover {
+      background: #fee2e2;
+      color: #dc2626;
+      transform: translateY(-1px);
+    }
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding: 16px 20px;
+      background: #fafafa;
+      border-radius: 16px;
+    }
+    .controls label {
+      display: flex;
+      align-items: center;
+      font-weight: 500;
+      color: #374151;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .controls input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-right: 10px;
+      cursor: pointer;
+      accent-color: #8b5cf6;
+    }
+    .delete-selected-btn {
+      background: #ef4444;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      width: auto;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+    .delete-selected-btn:hover {
+      background: #dc2626;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+    }
     #toast {
       position: fixed;
-      top: 20px;
-      right: 20px;
-      background-color: #333;
+      top: 24px;
+      right: 24px;
+      background-color: #1f2937;
       color: white;
-      padding: 1rem 1.5rem;
-      border-radius: 8px;
+      padding: 16px 24px;
+      border-radius: 16px;
       opacity: 0;
-      transform: translateY(-20px);
-      transition: all 0.4s ease;
+      transform: translateX(400px);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
       z-index: 1000;
       pointer-events: none;
+      font-weight: 500;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+      font-size: 0.95rem;
     }
     #toast.show {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateX(0);
     }
     .toast-success {
-      background-color: #28a745;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     }
     .toast-error {
-      background-color: #dc3545;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #9ca3af;
+      font-size: 1.05rem;
+      font-weight: 500;
+    }
+    #notesList {
+      max-height: 500px;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+    #notesList::-webkit-scrollbar {
+      width: 6px;
+    }
+    #notesList::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    #notesList::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+      border-radius: 3px;
+    }
+    #notesList::-webkit-scrollbar-thumb:hover {
+      background: #9ca3af;
+    }
+    @media (max-width: 640px) {
+      .container {
+        padding: 32px 24px;
+        border-radius: 24px;
+      }
+      h1 {
+        font-size: 2.25rem;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>My Notes</h1>
+  <div class="container">
+    <h1>My Notes</h1>
 
-  <!-- Toast Container -->
-  <div id="toast"></div>
+    <!-- Toast Container -->
+    <div id="toast"></div>
 
-  <!-- Page 1: Add Note -->
-  <div id="createNotePage">
-    <form id="noteForm">
-      <input type="text" id="title" placeholder="Title" required />
-      <textarea id="content" rows="4" placeholder="Content" required></textarea>
-      <input type="hidden" id="noteId" value="">
-      <button type="submit">Save Note</button>
-    </form>
+    <!-- Page 1: Add Note -->
+    <div id="createNotePage">
+      <form id="noteForm">
+        <input type="text" id="title" placeholder="Title" required />
+        <textarea id="content" placeholder="Content" required></textarea>
+        <input type="hidden" id="noteId" value="">
+        <button type="submit">Save Note</button>
+      </form>
+      <button class="toggle-btn" id="toggleNotesBtn">Show Notes</button>
+    </div>
+
+    <!-- Page 2: View Notes -->
+    <div id="notesPage" style="display: none;">
+      <div id="notesList"></div>
+      <button class="toggle-btn" id="backBtn">Back to Add Note</button>
+    </div>
   </div>
-
-  <!-- Page 2: View Notes -->
-  <div id="notesPage" style="display: none;">
-    <div id="notesList"></div>
-  </div>
-
-  <!-- Toggle Button -->
-  <button id="toggleNotesBtn">Show Notes</button>
 
   <script>
     const apiUrl = "http://127.0.0.1:8000/api/notes/";
     const notesList = document.getElementById("notesList");
     const toggleBtn = document.getElementById("toggleNotesBtn");
+    const backBtn = document.getElementById("backBtn");
     const createNotePage = document.getElementById("createNotePage");
     const notesPage = document.getElementById("notesPage");
     const toast = document.getElementById("toast");
 
     document.addEventListener("DOMContentLoaded", loadNotes);
     document.getElementById("noteForm").addEventListener("submit", handleFormSubmit);
-    toggleBtn.addEventListener("click", togglePages);
+    toggleBtn.addEventListener("click", () => togglePages(true));
+    backBtn.addEventListener("click", () => togglePages(false));
 
-    function togglePages() {
-      const showingNotes = notesPage.style.display === "block";
-
-      if (showingNotes) {
-        notesPage.style.display = "none";
-        createNotePage.style.display = "block";
-        toggleBtn.textContent = "Show Notes";
-      } else {
+    function togglePages(showNotes) {
+      if (showNotes) {
         createNotePage.style.display = "none";
         notesPage.style.display = "block";
-        toggleBtn.textContent = "Back to Add Note";
         loadNotes();
+      } else {
+        notesPage.style.display = "none";
+        createNotePage.style.display = "block";
+        document.getElementById("noteForm").reset();
+        document.getElementById("noteId").value = "";
       }
     }
 
@@ -151,24 +336,46 @@
         .then(res => res.json())
         .then(data => {
           notesList.innerHTML = "";
+
           if (data.length === 0) {
-            notesList.innerHTML = "<p>No notes created yet.</p>";
+            notesList.innerHTML = "<div class='empty-state'>No notes created yet.</div>";
             return;
           }
+
+          const controls = document.createElement("div");
+          controls.className = "controls";
+          controls.innerHTML = `
+            <label><input type="checkbox" id="selectAll"> Select All</label>
+            <button id="deleteSelectedBtn" class="delete-selected-btn">Delete Selected</button>
+          `;
+          notesList.appendChild(controls);
+
           data.forEach(note => {
             const div = document.createElement("div");
-            div.className = "note";
+            div.className = "note-card";
             div.innerHTML = `
-              <h3>${note.title}</h3>
-              <p>${note.content}</p>
-              <div class="timestamp">Created at: ${note.created_at}</div>
+              <div class="note-header">
+                <input type="checkbox" class="note-checkbox" data-id="${note.id}">
+                <div class="note-content">
+                  <h3>${note.title}</h3>
+                  <p>${note.content}</p>
+                  <div class="timestamp">Created at: ${note.created_at}</div>
+                </div>
+              </div>
               <div class="note-actions">
-                <button onclick="editNote(${note.id}, '${note.title}', \`${note.content}\`)">Edit</button>
-                <button onclick="deleteNote(${note.id})">Delete</button>
+                <button class="edit-btn" onclick="editNote(${note.id}, '${note.title}', \`${note.content}\`)">Edit</button>
+                <button class="delete-btn" onclick="deleteNote(${note.id})">Delete</button>
               </div>
             `;
             notesList.appendChild(div);
           });
+
+          document.getElementById("selectAll").addEventListener("change", function () {
+            const checkboxes = document.querySelectorAll(".note-checkbox");
+            checkboxes.forEach(cb => cb.checked = this.checked);
+          });
+
+          document.getElementById("deleteSelectedBtn").addEventListener("click", deleteSelectedNotes);
         })
         .catch(() => showToast("Failed to load notes", "error"));
     }
@@ -191,6 +398,7 @@
         .then(res => {
           if (!res.ok) throw new Error();
           document.getElementById("noteForm").reset();
+          document.getElementById("noteId").value = "";
           if (notesPage.style.display === "block") loadNotes();
           showToast(id ? "Note updated successfully!" : "Note saved successfully!", "success");
         })
@@ -198,7 +406,7 @@
     }
 
     function editNote(id, title, content) {
-      togglePages();
+      togglePages(false);
       document.getElementById("title").value = title;
       document.getElementById("content").value = content;
       document.getElementById("noteId").value = id;
@@ -216,7 +424,26 @@
       }
     }
 
-    // ✅ Toast Function
+    function deleteSelectedNotes() {
+      const selectedIds = Array.from(document.querySelectorAll(".note-checkbox:checked")).map(cb => cb.dataset.id);
+      if (selectedIds.length === 0) {
+        showToast("No notes selected!", "error");
+        return;
+      }
+
+      if (confirm(`Are you sure you want to delete ${selectedIds.length} note(s)?`)) {
+        Promise.all(selectedIds.map(id =>
+          fetch(apiUrl + id + "/", { method: "DELETE" })
+        ))
+          .then(responses => {
+            if (responses.some(r => !r.ok)) throw new Error();
+            showToast("Selected notes deleted successfully!", "success");
+            loadNotes();
+          })
+          .catch(() => showToast("Failed to delete selected notes", "error"));
+      }
+    }
+
     function showToast(message, type = "success") {
       toast.textContent = message;
       toast.className = type === "success" ? "show toast-success" : "show toast-error";
