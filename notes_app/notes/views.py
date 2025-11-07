@@ -15,7 +15,7 @@ from .models import Notes
 #     serializer_class = NotesSerializers
 
 
-# Get all notes
+# Get all notes or Create a new note
 
 @api_view(['GET', 'POST'])
 def notes_list_create(request):
@@ -31,6 +31,8 @@ def notes_list_create(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+# Get, Update, Delete a note  by ID
+
 @api_view(['GET', 'PUT', 'DELETE'])
 def notes_detail(request, pk):
     try:
@@ -38,11 +40,11 @@ def notes_detail(request, pk):
     except Notes.DoesNotExist:
         return Response({'error': 'Note not found'}, status=status.HTTP_404_NOT_FOUND)
     
-    # get a sinle note
+    # get a note
     if request.method == 'GET':
         serializer = NotesSerializers(note)
         return Response(serializer.data)
-    
+
     # update a note
     elif request.method == 'PUT':
         serializer = NotesSerializers(note, data=request.data)
@@ -50,7 +52,8 @@ def notes_detail(request, pk):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     # delete a note(s)
     elif request.method == "DELETE":
         note.delete()
-        return Response({'message': "Note deleted successfully!"})
+        return Response({'message': "Note deleted successfully!"}, status=status.HTTP_204_NO_CONTENT)

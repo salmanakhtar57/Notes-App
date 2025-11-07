@@ -9,5 +9,5 @@ from . import views
 
 urlpatterns = [
     path('notes/', views.notes_list_create, name="notes-list-create"),
-    path('notes/<int:pk>', views.notes_detail, name='note-detail')
+    path('notes/<int:pk>/', views.notes_detail, name='note-detail')
 ]

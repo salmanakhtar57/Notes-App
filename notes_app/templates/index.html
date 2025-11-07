@@ -76,15 +76,19 @@
     form {
       margin-bottom: 24px;
     }
+    .input-wrapper {
+      position: relative;
+      margin-bottom: 8px;
+    }
     input[type="text"], textarea {
       width: 100%;
       padding: 16px 20px;
-      margin-bottom: 16px;
+      padding-right: 85px; /* Space for counter */
       font-size: 1rem;
-      border: none;
+      border: 2px solid #e5e7eb; /* Added visible border */
       border-radius: 16px;
       font-family: inherit;
-      background: #f9fafb;
+      background: #ffffff; /* Pure white background */
       color: #111827;
       transition: all 0.2s ease;
     }
@@ -92,15 +96,30 @@
     body.dark-mode textarea {
       background: #374151;
       color: #f9fafb;
+      border-color: #4b5563;
+    }
+    input[type="text"].error, 
+    textarea.error {
+      background: #fee2e2;
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+    body.dark-mode input[type="text"].error, 
+    body.dark-mode textarea.error {
+      background: #7f1d1d;
+      border-color: #dc2626;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
     }
     input[type="text"]:focus, textarea:focus {
       outline: none;
-      background: #f3f4f6;
+      background: #fafafa;
+      border-color: #8b5cf6;
       box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
     }
     body.dark-mode input[type="text"]:focus, 
     body.dark-mode textarea:focus {
       background: #4b5563;
+      border-color: #a78bfa;
     }
     input[type="text"]::placeholder, textarea::placeholder {
       color: #9ca3af;
@@ -114,6 +133,68 @@
       min-height: 140px;
       font-size: 0.95rem;
       line-height: 1.6;
+      padding-bottom: 35px; /* Extra space for counter at bottom */
+    }
+    .char-counter {
+      position: absolute;
+      right: 16px;
+      font-size: 0.75rem;
+      color: #9ca3af;
+      font-weight: 600;
+      pointer-events: none;
+      transition: color 0.2s ease;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+    body.dark-mode .char-counter {
+      background: rgba(55, 65, 81, 0.9);
+    }
+    .input-wrapper input[type="text"] + .char-counter {
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .input-wrapper textarea + .char-counter {
+      bottom: 12px;
+    }
+    .char-counter.warning {
+      color: #f59e0b;
+      font-weight: 700;
+    }
+    .char-counter.error {
+      color: #ef4444;
+      font-weight: 700;
+      animation: pulse 0.5s ease-in-out;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    .error-message {
+      color: #ef4444;
+      font-size: 0.85rem;
+      margin-top: 4px;
+      margin-bottom: 12px;
+      font-weight: 600;
+      display: none;
+      padding-left: 4px;
+      animation: slideIn 0.3s ease-out;
+    }
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .error-message.show {
+      display: block;
+    }
+    body.dark-mode .error-message {
+      color: #fca5a5;
     }
     button {
       width: 100%;
@@ -132,12 +213,16 @@
       box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.5);
       margin-bottom: 0;
     }
-    button[type="submit"]:hover {
+    button[type="submit"]:hover:not(:disabled) {
       transform: translateY(-2px);
       box-shadow: 0 15px 30px -5px rgba(139, 92, 246, 0.6);
     }
-    button[type="submit"]:active {
+    button[type="submit"]:active:not(:disabled) {
       transform: translateY(0);
+    }
+    button[type="submit"]:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
     .toggle-btn {
       background: transparent;
@@ -150,6 +235,9 @@
     .toggle-btn:hover {
       background: #f5f3ff;
     }
+    body.dark-mode .toggle-btn:hover {
+      background: #4c1d95;
+    }
 
     /* Search and Filter Section */
     .search-filter-section {
@@ -159,10 +247,10 @@
       width: 100%;
       padding: 14px 20px;
       font-size: 0.95rem;
-      border: none;
+      border: 2px solid #e5e7eb;
       border-radius: 14px;
       font-family: inherit;
-      background: #f9fafb;
+      background: #ffffff;
       color: #111827;
       margin-bottom: 12px;
       transition: all 0.2s ease;
@@ -170,14 +258,17 @@
     body.dark-mode .search-box {
       background: #374151;
       color: #f9fafb;
+      border-color: #4b5563;
     }
     .search-box:focus {
       outline: none;
-      background: #f3f4f6;
+      background: #fafafa;
+      border-color: #8b5cf6;
       box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
     }
     body.dark-mode .search-box:focus {
       background: #4b5563;
+      border-color: #a78bfa;
     }
     .filter-sort-row {
       display: flex;
@@ -188,9 +279,9 @@
       flex: 1;
       padding: 12px 16px;
       font-size: 0.9rem;
-      border: none;
+      border: 2px solid #e5e7eb;
       border-radius: 12px;
-      background: #f9fafb;
+      background: #ffffff;
       color: #111827;
       font-family: inherit;
       cursor: pointer;
@@ -200,13 +291,15 @@
     body.dark-mode .sort-select {
       background: #374151;
       color: #f9fafb;
+      border-color: #4b5563;
     }
     .sort-select:focus {
       outline: none;
-      background: #f3f4f6;
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
     }
     body.dark-mode .sort-select:focus {
-      background: #4b5563;
+      border-color: #a78bfa;
     }
 
     .note-card {
@@ -304,6 +397,7 @@
       margin-bottom: 8px;
       letter-spacing: -0.3px;
       transition: color 0.3s ease;
+      word-wrap: break-word;
     }
     body.dark-mode .note-content h3 {
       color: #f9fafb;
@@ -314,6 +408,8 @@
       margin-bottom: 12px;
       font-size: 0.95rem;
       transition: color 0.3s ease;
+      word-wrap: break-word;
+      white-space: pre-wrap;
     }
     body.dark-mode .note-content p {
       color: #d1d5db;
@@ -515,10 +611,20 @@
     <!-- Page 1: Add Note -->
     <div id="createNotePage">
       <form id="noteForm">
-        <input type="text" id="title" placeholder="Title" required />
-        <textarea id="content" placeholder="Content" required></textarea>
+        <div class="input-wrapper">
+          <input type="text" id="title" placeholder="Title" required />
+          <span class="char-counter" id="titleCounter">0/100</span>
+        </div>
+        <div class="error-message" id="titleError"></div>
+        
+        <div class="input-wrapper">
+          <textarea id="content" placeholder="Content" required></textarea>
+          <span class="char-counter" id="contentCounter">0/1000</span>
+        </div>
+        <div class="error-message" id="contentError"></div>
+        
         <input type="hidden" id="noteId" value="">
-        <button type="submit">Save Note</button>
+        <button type="submit" id="submitBtn">Save Note</button>
       </form>
       <button class="toggle-btn" id="toggleNotesBtn">Show Notes</button>
     </div>
@@ -552,6 +658,13 @@
     const toast = document.getElementById("toast");
     const searchBox = document.getElementById("searchBox");
     const sortSelect = document.getElementById("sortSelect");
+    const titleInput = document.getElementById("title");
+    const contentInput = document.getElementById("content");
+    const titleCounter = document.getElementById("titleCounter");
+    const contentCounter = document.getElementById("contentCounter");
+    const titleError = document.getElementById("titleError");
+    const contentError = document.getElementById("contentError");
+    const submitBtn = document.getElementById("submitBtn");
 
     let allNotes = [];
     let pinnedNotes = JSON.parse(localStorage.getItem('pinnedNotes') || '[]');
@@ -561,6 +674,65 @@
     if (darkMode) {
       document.body.classList.add('dark-mode');
       document.getElementById('themeToggle').textContent = '☀️';
+    }
+
+    // Character counter functionality with limit enforcement
+    titleInput.addEventListener('input', function() {
+      enforceLimit(this, 100);
+      updateCharCounter(this, titleCounter, 100);
+      clearError(titleInput, titleError);
+    });
+
+    contentInput.addEventListener('input', function() {
+      enforceLimit(this, 1000);
+      updateCharCounter(this, contentCounter, 1000);
+      clearError(contentInput, contentError);
+    });
+
+    function enforceLimit(input, maxLength) {
+      if (input.value.length > maxLength) {
+        input.value = input.value.substring(0, maxLength);
+        // Show error message when limit is reached
+        const errorElement = input.id === 'title' ? titleError : contentError;
+        showError(input, errorElement, `Maximum ${maxLength} characters reached!`);
+        showToast(`Maximum ${maxLength} characters reached!`, "error");
+      }
+    }
+
+    function updateCharCounter(input, counter, maxLength) {
+      const length = input.value.length;
+      counter.textContent = `${length}/${maxLength}`;
+      
+      // Update counter color based on length
+      if (length >= maxLength) {
+        counter.classList.add('error');
+        counter.classList.remove('warning');
+        // Apply pulse animation to counter element
+        counter.style.animation = 'none';
+        setTimeout(() => {
+          counter.style.animation = 'pulse 0.5s ease-in-out';
+        }, 10);
+      } else if (length > maxLength * 0.9) {
+        counter.classList.add('error');
+        counter.classList.remove('warning');
+      } else if (length > maxLength * 0.7) {
+        counter.classList.add('warning');
+        counter.classList.remove('error');
+      } else {
+        counter.classList.remove('warning', 'error');
+      }
+    }
+
+    function clearError(input, errorElement) {
+      input.classList.remove('error');
+      errorElement.classList.remove('show');
+      errorElement.textContent = '';
+    }
+
+    function showError(input, errorElement, message) {
+      input.classList.add('error');
+      errorElement.textContent = message;
+      errorElement.classList.add('show');
     }
 
     document.addEventListener("DOMContentLoaded", loadNotes);
@@ -588,17 +760,29 @@
         createNotePage.style.display = "block";
         document.getElementById("noteForm").reset();
         document.getElementById("noteId").value = "";
+        titleCounter.textContent = '0/100';
+        contentCounter.textContent = '0/1000';
+        titleCounter.classList.remove('warning', 'error');
+        contentCounter.classList.remove('warning', 'error');
+        clearError(titleInput, titleError);
+        clearError(contentInput, contentError);
       }
     }
 
     function loadNotes() {
       fetch(apiUrl)
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) throw new Error('Failed to fetch notes');
+          return res.json();
+        })
         .then(data => {
           allNotes = data;
           filterAndDisplayNotes();
         })
-        .catch(() => showToast("Failed to load notes", "error"));
+        .catch((error) => {
+          console.error('Load notes error:', error);
+          showToast("Failed to load notes. Check if server is running.", "error");
+        });
     }
 
     function filterAndDisplayNotes() {
@@ -638,7 +822,7 @@
       notesList.innerHTML = "";
 
       if (notes.length === 0 && !showNotFound) {
-        notesList.innerHTML = "<div class='empty-state'>No notes found.</div>";
+        notesList.innerHTML = "<div class='empty-state'>No notes found. Create your first note!</div>";
         return;
       }
 
@@ -662,6 +846,11 @@
         const div = document.createElement("div");
         div.className = `note-card ${pinnedNotes.includes(note.id) ? 'pinned' : ''}`;
         const isPinned = pinnedNotes.includes(note.id);
+        
+        // Escape content for safe display
+        const safeTitle = escapeHtml(note.title);
+        const safeContent = escapeHtml(note.content);
+        
         div.innerHTML = `
           <div class="pin-icon" onclick="togglePin(${note.id})">
             ${isPinned ? '📌' : '📍'}
@@ -670,13 +859,13 @@
           <div class="note-header">
             <input type="checkbox" class="note-checkbox" data-id="${note.id}">
             <div class="note-content">
-              <h3>${note.title}</h3>
-              <p>${note.content}</p>
-              <div class="timestamp">Created at: ${note.created_at}</div>
+              <h3>${safeTitle}</h3>
+              <p>${safeContent}</p>
+              <div class="timestamp">Created: ${note.created_at}</div>
             </div>
           </div>
           <div class="note-actions">
-            <button class="edit-btn" onclick="editNote(${note.id}, '${note.title}', \`${note.content}\`)">Edit</button>
+            <button class="edit-btn" onclick="editNote(${note.id})">Edit</button>
             <button class="delete-btn" onclick="deleteNote(${note.id})">Delete</button>
           </div>
         `;
@@ -702,6 +891,12 @@
       }
 
       updateDeleteButton();
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
     }
 
     function updateDeleteButton() {
@@ -731,48 +926,140 @@
 
     function handleFormSubmit(e) {
       e.preventDefault();
-      const title = document.getElementById("title").value;
-      const content = document.getElementById("content").value;
+      
+      // Clear previous errors
+      clearError(titleInput, titleError);
+      clearError(contentInput, contentError);
+      
+      const title = titleInput.value.trim();
+      const content = contentInput.value.trim();
       const id = document.getElementById("noteId").value;
+
+      // Client-side validation
+      let hasError = false;
+      
+      if (!title) {
+        showError(titleInput, titleError, "Title is required");
+        hasError = true;
+      } else if (title.length > 100) {
+        showError(titleInput, titleError, "Title cannot exceed 100 characters");
+        hasError = true;
+      }
+      
+      if (!content) {
+        showError(contentInput, contentError, "Content is required");
+        hasError = true;
+      } else if (content.length > 1000) {
+        showError(contentInput, contentError, "Content cannot exceed 1000 characters");
+        hasError = true;
+      }
+      
+      if (hasError) {
+        showToast("Please fix the errors before submitting", "error");
+        return;
+      }
 
       const payload = { title, content };
       const method = id ? "PUT" : "POST";
       const url = id ? apiUrl + id + "/" : apiUrl;
+
+      // Disable submit button during request
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Saving...";
 
       fetch(url, {
         method: method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       })
-        .then(res => {
-          if (!res.ok) throw new Error();
+        .then(async res => {
+          if (!res.ok) {
+            const data = await res.json();
+            
+            // Handle validation errors from backend
+            if (res.status === 400) {
+              // Django Rest Framework returns errors in different formats
+              if (data.title) {
+                showError(titleInput, titleError, Array.isArray(data.title) ? data.title[0] : data.title);
+              }
+              if (data.content) {
+                showError(contentInput, contentError, Array.isArray(data.content) ? data.content[0] : data.content);
+              }
+              // Handle non_field_errors
+              if (data.non_field_errors) {
+                const errorMsg = Array.isArray(data.non_field_errors) ? data.non_field_errors[0] : data.non_field_errors;
+                showToast(errorMsg, "error");
+              } else if (!data.title && !data.content) {
+                showToast("Validation error. Please check your input.", "error");
+              }
+              throw new Error('Validation error');
+            } else {
+              throw new Error(`Server error: ${res.status}`);
+            }
+          }
+          
+          return res.json();
+        })
+        .then(data => {
+          // Success
           document.getElementById("noteForm").reset();
           document.getElementById("noteId").value = "";
-          if (notesPage.style.display === "block") loadNotes();
+          titleCounter.textContent = '0/100';
+          contentCounter.textContent = '0/1000';
+          titleCounter.classList.remove('warning', 'error');
+          contentCounter.classList.remove('warning', 'error');
+          
+          if (notesPage.style.display === "block") {
+            loadNotes();
+          }
+          
           showToast(id ? "Note updated successfully!" : "Note saved successfully!", "success");
         })
-        .catch(() => showToast("Something went wrong!", "error"));
+        .catch((error) => {
+          console.error('Submit error:', error);
+          if (error.message !== 'Validation error') {
+            showToast("Something went wrong! Check if server is running.", "error");
+          }
+        })
+        .finally(() => {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Save Note";
+        });
     }
 
-    function editNote(id, title, content) {
+    function editNote(id) {
+      // Find the note from allNotes array
+      const note = allNotes.find(n => n.id === id);
+      if (!note) {
+        showToast("Note not found", "error");
+        return;
+      }
+      
       togglePages(false);
-      document.getElementById("title").value = title;
-      document.getElementById("content").value = content;
+      titleInput.value = note.title;
+      contentInput.value = note.content;
       document.getElementById("noteId").value = id;
+      
+      // Update character counters
+      updateCharCounter(titleInput, titleCounter, 100);
+      updateCharCounter(contentInput, contentCounter, 1000);
     }
 
     function deleteNote(id) {
       if (confirm("Are you sure you want to delete this note?")) {
         fetch(apiUrl + id + "/", { method: "DELETE" })
           .then(res => {
-            if (!res.ok) throw new Error();
+            if (!res.ok) throw new Error('Failed to delete');
             // Remove from pinned if it was pinned
             pinnedNotes = pinnedNotes.filter(noteId => noteId !== id);
             localStorage.setItem('pinnedNotes', JSON.stringify(pinnedNotes));
             loadNotes();
             showToast("Note deleted successfully!", "success");
           })
-          .catch(() => showToast("Failed to delete note", "error"));
+          .catch((error) => {
+            console.error('Delete error:', error);
+            showToast("Failed to delete note. Check if server is running.", "error");
+          });
       }
     }
 
@@ -788,14 +1075,17 @@
           fetch(apiUrl + id + "/", { method: "DELETE" })
         ))
           .then(responses => {
-            if (responses.some(r => !r.ok)) throw new Error();
+            if (responses.some(r => !r.ok)) throw new Error('Some deletes failed');
             // Remove deleted notes from pinned
             pinnedNotes = pinnedNotes.filter(id => !selectedIds.includes(id.toString()));
             localStorage.setItem('pinnedNotes', JSON.stringify(pinnedNotes));
             showToast("Selected notes deleted successfully!", "success");
             loadNotes();
           })
-          .catch(() => showToast("Failed to delete selected notes", "error"));
+          .catch((error) => {
+            console.error('Delete selected error:', error);
+            showToast("Failed to delete some notes. Check if server is running.", "error");
+          });
       }
     }
 
@@ -805,8 +1095,13 @@
 
       setTimeout(() => {
         toast.classList.remove("show");
-      }, 2500);
+      }, 3000);
     }
+
+    // Make functions globally accessible
+    window.togglePin = togglePin;
+    window.editNote = editNote;
+    window.deleteNote = deleteNote;
   </script>
 </body>
 </html>
